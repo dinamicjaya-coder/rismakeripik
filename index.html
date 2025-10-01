@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Keripik Ubi Risma — Toko Online</title>
+<style>
+  :root{
+    --primary-600:#6d28d9;
+    --primary-400:#a78bfa;
+    --accent:#f59e0b;
+    --bg1:#f3e8ff;
+    --bg2:#ede9fe;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;font-family:Inter, 'Segoe UI', system-ui, Arial;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:#222; -webkit-font-smoothing:antialiased;
+  }
+  /* header + slider */
+  header{position:relative;overflow:hidden;height:300px;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  .slider{display:flex;width:300%;height:100%;animation:slide 12s infinite;}
+  .slide{flex:0 0 100%;height:100%;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center}
+  .slide .overlay{background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.15));position:absolute;inset:0;}
+  .slide .hero-inner{position:relative;color:white;text-align:center;padding:1rem;max-width:900px;}
+  .slide h1{font-size:2.2rem;margin-bottom:.6rem;text-shadow:0 6px 18px rgba(0,0,0,.35)}
+  .slide p{margin:0 auto 1rem;max-width:720px}
+  .btn{background:var(--accent);color:white;padding:.6rem .9rem;border-radius:10px;border:0;cursor:pointer;font-weight:600}
+  @keyframes slide{
+    0%{transform:translateX(0)} 30%{transform:translateX(0)}
+    33%{transform:translateX(-100%)} 63%{transform:translateX(-100%)}
+    66%{transform:translateX(-200%)} 96%{transform:translateX(-200%)} 100%{transform:translateX(0)}
+  }
+
+  /* layout */
+  main{max-width:1100px;margin:1.5rem auto;padding:0 1rem 4rem;}
+  .grid{display:grid;gap:1.2rem}
+  /* profile */
+  .profile{display:flex;gap:1rem;align-items:flex-start;margin-bottom:1rem}
+  .profile .pic{width:220px;height:140px;border-radius:12px;background-size:cover;background-position:center;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+  .profile .info h2{color:var(--primary-600);margin-top:0}
+  .profile .info p{line-height:1.5;color:#444}
+
+  /* products */
+  .catalog{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem}
+  .product{background:white;border-radius:12px;overflow:hidden;box-shadow:0 8px 22px rgba(16,24,40,.06);display:flex;flex-direction:column;}
+  .product img{width:100%;height:160px;object-fit:cover}
+  .p-body{padding:0.9rem;flex:1;display:flex;flex-direction:column}
+  .p-title{color:var(--primary-600);font-weight:700;margin:0 0 .3rem}
+  .p-desc{color:#555;font-size:0.95rem;margin-bottom:.6rem;flex:1}
+  .p-row{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+  .price{font-weight:800;color:var(--accent)}
+
+  /* cart drawer */
+  #cartDrawer{position:fixed;top:0;right:-420px;width:380px;height:100%;background:#fff;padding:1rem;box-shadow:-8px 0 30px rgba(2,6,23,.2);transition:right .28s;z-index:1999;overflow:auto}
+  #cartDrawer.open{right:0}
+  #cartDrawer h3{margin-top:0;color:var(--primary-600)}
+  .cart-item{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px dashed #eee}
+  .cart-footer{margin-top:1rem;display:flex;flex-direction:column;gap:.6rem}
+
+  /* checkout modal */
+  #checkoutModal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:3000}
+  .modal{background:white;padding:1.2rem;border-radius:12px;max-width:420px;width:92%}
+  .modal input{width:100%;padding:.6rem;margin-top:.4rem;border-radius:8px;border:1px solid #ddd}
+
+  /* gallery */
+  .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:1rem}
+  .gallery img{width:100%;height:110px;object-fit:cover;border-radius:10px;cursor:pointer;transition:transform .2s;box-shadow:0 6px 18px rgba(2,6,23,.06)}
+  .gallery img:hover{transform:scale(1.04)}
+
+  /* lightbox */
+  #lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);z-index:4000}
+  #lightbox img{max-width:92%;max-height:84%;border-radius:10px}
+  .lb-close{position:absolute;top:18px;right:26px;color:white;font-size:32px;cursor:pointer}
+  .lb-nav{position:absolute;top:50%;transform:translateY(-50%);color:white;font-size:36px;cursor:pointer;user-select:none}
+  .lb-prev{left:20px}.lb-next{right:20px}
+
+  /* features (packaging & BPOM) */
+  .features{display:flex;flex-wrap:wrap;gap:12px;margin-top:1rem}
+  .feature{background:white;padding:12px;border-radius:10px;display:flex;gap:10px;align-items:center;box-shadow:0 6px 18px rgba(2,6,23,.04);min-width:220px}
+  .feature svg{width:44px;height:44px;flex-shrink:0;color:var(--primary-600)}
+
+  /* comments */
+  .comments{margin-top:1.2rem;background:white;padding:1rem;border-radius:10px;box-shadow:0 6px 20px rgba(2,6,23,.04)}
+  .comment-form input,.comment-form textarea{width:100%;padding:.6rem;border-radius:8px;border:1px solid #e6e6f0;margin-top:.4rem}
+  .stars{display:flex;gap:6px;margin-top:.5rem;cursor:pointer;font-size:20px;color:#d1d5db}
+  .stars .active{color:#fbbf24}
+
+  /* floating icons */
+  .social{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:5000}
+  .social a{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:white;box-shadow:0 8px 24px rgba(2,6,23,.12);text-decoration:none}
+  .social svg{width:26px;height:26px}
+
+  /* responsive tweaks */
+  @media (max-width:760px){
+    header{height:220px}
+    .slide h1{font-size:1.4rem}
+    .profile{flex-direction:column}
+    .profile .pic{width:100%;height:160px}
+    #cartDrawer{width:100%;right:-100%}
+    #cartDrawer.open{right:0}
+  }
+</style>
+</head>
+<body>
+
+<!-- SLIDER HEADER -->
+<header>
+  <div class="slider" aria-hidden="false">
+    <div class="slide" style="background-image:url('https://source.unsplash.com/1400x600/?sweet-potato,chips')">
+      <div class="overlay"></div>
+      <div class="hero-inner">
+        <h1>Keripik Ubi Risma — Renyah, Sehat, Lezat</h1>
+        <p>Keripik ubi rumahan, diolah higienis, tanpa pengawet — siap jadi teman ngemilmu.</p>
+        <button class="btn" onclick="scrollToCatalog()">Belanja Sekarang</button>
+      </div>
+    </div>
+    <div class="slide" style="background-image:url('https://source.unsplash.com/1400x600/?crispy,snack')">
+      <div class="overlay"></div>
+      <div class="hero-inner">
+        <h1>Rasa Pedas, Original, Manis & Varian Lain</h1>
+        <p>Pilih varian favoritmu — dijamin renyah dan tahan lama dengan kemasan terbaik.</p>
+        <button class="btn" onclick="scrollToCatalog()">Lihat Produk</button>
+      </div>
+    </div>
+    <div class="slide" style="background-image:url('https://source.unsplash.com/1400x600/?food,crisps')">
+      <div class="overlay"></div>
+      <div class="hero-inner">
+        <h1>Terdaftar BPOM & Kemasan Food-grade</h1>
+        <p>Kualitas terjaga — kami prioritaskan keamanan & rasa.</p>
+        <button class="btn" onclick="scrollToCatalog()">Pesan Sekarang</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- PROFILE -->
+  <section class="profile">
+    <div class="pic" style="background-image:url('https://source.unsplash.com/700x420/?small-business,food')"></div>
+    <div class="info">
+      <h2>Keripik Ubi Risma</h2>
+      <p>
+        Keripik Ubi Risma adalah usaha rumahan yang fokus pada keripik ubi berkualitas — dipilih dari ubi pilihan,
+        digoreng rapi, diberi bumbu alami, dan dikemas higienis. Kami melayani pembelian eceran & grosir.
+      </p>
+      <p><strong>Kontak:</strong> <a href="https://wa.me/6281234567890" target="_blank">+62 812-3456-7890 (WA)</a> &bull; <strong>Email:</strong> risma@example.com</p>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section>
+    <h2 id="catalog-title">Katalog Produk</h2>
+    <div class="catalog" id="catalog"></div>
+  </section>
+
+  <!-- GALLERY -->
+  <section>
+    <h2>Galeri Produk</h2>
+    <div class="gallery" id="gallery"></div>
+  </section>
+
+  <!-- FEATURES -->
+  <section>
+    <h2>Kenapa Pilih Kami?</h2>
+    <p>Selain enak, kami pastikan produk aman, higienis, dan terstandarisasi:</p>
+    <div class="features">
+      <div class="feature">
+        <!-- Packaging icon -->
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 16V8a1 1 0 0 0-.553-.894l-8-4a1 1 0 0 0-.894 0l-8 4A1 1 0 0 0 3 8v8a1 1 0 0 0 .553.894l8 4a1 1 0 0 0 .894 0l8-4A1 1 0 0 0 21 16zM12 4.236 18.764 8 12 11.764 5.236 8 12 4.236zM5 9.868l6 3v6.264l-6-3v-6.264zm8 9.264v-6.264l6-3v6.264l-6 3z"/></svg>
+        <div>
+          <strong>Kemasan Higienis</strong>
+          <div style="color:#444;font-size:.95rem">Dikemas pada mesin sealer food-grade & berlapis pelindung agar renyah lama.</div>
+        </div>
+      </div>
+      <div class="feature">
+        <!-- BPOM icon -->
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+        <div>
+          <strong>Terdaftar BPOM</strong>
+          <div style="color:#444;font-size:.95rem">Produk telah terdaftar & mendapat label resmi BPOM.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMENTS -->
+  <section class="comments" id="comments">
+    <h2>Komentar & Rating</h2>
+    <div class="comment-form">
+      <input id="commentName" placeholder="Nama (misal: Siti)">
+      <textarea id="commentText" rows="3" placeholder="Tulis komentar..."></textarea>
+      <div class="stars" id="ratingStars">
+        <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
+      </div>
+      <button class="btn" onclick="addComment()">Kirim Komentar</button>
+    </div>
+    <div id="commentList" style="margin-top:12px"></div>
+  </section>
+</main>
+
+<!-- CART DRAWER -->
+<div id="cartDrawer" aria-hidden="true">
+  <h3>Keranjang Belanja</h3>
+  <div id="cartItems">Belum ada barang dalam keranjang.</div>
+  <div class="cart-footer">
+    <div style="display:flex;justify-content:space-between"><strong>Total:</strong><strong id="cartTotal">Rp0</strong></div>
+    <button class="btn" onclick="openCheckout()">Checkout</button>
+    <button style="background:#eee;color:#333;border:0;padding:.6rem;border-radius:10px;cursor:pointer" onclick="toggleCart()">Tutup</button>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div id="checkoutModal" aria-hidden="true">
+  <div class="modal">
+    <h3>Formulir Pemesanan</h3>
+    <label>Nama</label>
+    <input id="custName" placeholder="Nama penerima">
+    <label>Alamat</label>
+    <input id="custAddr" placeholder="Alamat lengkap">
+    <label>Catatan (opsional)</label>
+    <input id="custNote" placeholder="Contoh: minta pedas sedang">
+    <div style="display:flex;gap:.6rem;margin-top:.8rem">
+      <button class="btn" onclick="sendOrder()">Kirim ke WhatsApp</button>
+      <button style="background:#ddd;color:#222;border:0;padding:.6rem;border-radius:8px;cursor:pointer" onclick="closeCheckout()">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" role="dialog" aria-hidden="true">
+  <div class="lb-close" onclick="closeLightbox()">×</div>
+  <div class="lb-nav lb-prev" onclick="changeLightbox(-1)">‹</div>
+  <img id="lightboxImg" src="" alt="foto produk">
+  <div class="lb-nav lb-next" onclick="changeLightbox(1)">›</div>
+</div>
+
+<!-- FLOATING SOCIAL / MARKETPLACE ICONS (SVG) -->
+<div class="social" aria-hidden="false">
+  <a href="https://shopee.co.id/" target="_blank" title="Shopee" aria-label="Shopee">
+    <svg viewBox="0 0 24 24" fill="#ff5722"><path d="M17 6a1 1 0 0 0-1-1h-1V4a3 3 0 0 0-6 0v1H8a1 1 0 0 0-1 1v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6zM10 4a1 1 0 1 1 2 0v1h-2V4zM9 9h6v2H9V9z"/></svg>
+  </a>
+  <a href="https://tokopedia.com/" target="_blank" title="Tokopedia" aria-label="Tokopedia">
+    <svg viewBox="0 0 24 24" fill="#1abc9c"><path d="M12 2c-1.3 0-2.4.8-2.8 2H7.5C6 4 4 6 4 9v6c0 3 2.5 5 5 5h6c2.5 0 5-2 5-5V9c0-3-2-5-3.5-5h-1.7C14.4 2.8 13.3 2 12 2zm-1 7c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm4 0c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1z"/></svg>
+  </a>
+  <a href="https://bukalapak.com/" target="_blank" title="Bukalapak" aria-label="Bukalapak">
+    <svg viewBox="0 0 24 24" fill="#c2185b"><path d="M12 21s-7-4.4-9-7.2C1.2 11 3 8 6 7c2.7-1 4 1.2 6 3 2-1.8 3.2-4 6-3 3 1 4.8 4 3 6.8-2 2.8-9 7.2-9 7.2z"/></svg>
+  </a>
+  <a href="https://wa.me/6281234567890" target="_blank" title="WhatsApp" aria-label="WhatsApp">
+    <svg viewBox="0 0 24 24" fill="#25d366"><path d="M20.5 3.5A10 10 0 0 0 3.5 20.5L2 22l1.6-4.7A10 10 0 1 0 20.5 3.5zM12 19a7 7 0 0 1-3.8-1.1l-.3-.2-2.3.6.6-2.2-.2-.3A7 7 0 1 1 12 19zM17.3 14.3c-.3-.1-1.8-.9-2-.9s-.4 0-.6.1c-.1.1-.5.1-.9.1-.4 0-.8 0-1.2-.4s-1-1.1-1-1.6c0-.5.2-.5.5-.8.3-.3.5-.7.6-1 .1-.3 0-.6-.1-.7-.1-.1-.6-1.4-.9-1.9-.3-.5-.6-.5-.9-.5s-.6 0-.9 0c-.3 0-.7.1-1 .5-.4.4-1.4 1.4-1.4 3.5s1.4 4 1.6 4.2c.2.1 2.7 4.3 6.6 5.9 3 .9 3.1-1.9 3.1-2.2 0-.2-.1-.4-.2-.5-.1-.1-.4-.3-.7-.5z"/></svg>
+  </a>
+  <a href="https://instagram.com" target="_blank" title="Instagram" aria-label="Instagram">
+    <svg viewBox="0 0 24 24" fill="url(#igGrad)"><defs><linearGradient id="igGrad" x1="0" x2="1"><stop offset="0" stop-color="#feda75"/><stop offset=".3" stop-color="#fa7e1e"/><stop offset=".6" stop-color="#d62976"/><stop offset="1" stop-color="#4f5bd5"/></linearGradient></defs><rect x="3" y="3" width="18" height="18" rx="5"></rect></svg>
+  </a>
+  <a href="https://facebook.com" target="_blank" title="Facebook" aria-label="Facebook">
+    <svg viewBox="0 0 24 24" fill="#1877f2"><path d="M22 12.1C22 6.6 17.5 2 12 2S2 6.6 2 12.1C2 17 5.7 21.2 10.4 22v-7.1H8.1V12h2.2V9.6c0-2.2 1.3-3.4 3.2-3.4.9 0 1.9.1 1.9.1v2.1h-1.1c-1.1 0-1.4.7-1.4 1.4V12h2.4l-.4 2.9h-2v7.1C18.3 21.2 22 17 22 12.1z"/></svg>
+  </a>
+</div>
+
+<script>
+/* ---------- Data ---------- */
+const products = [
+  {id:1,name:'Keripik Ubi Original',price:15000,img:'https://source.unsplash.com/600x400/?sweet-potato,chip',desc:'Renyah alami tanpa tambahan rasa.'},
+  {id:2,name:'Keripik Ubi Pedas',price:17000,img:'https://source.unsplash.com/600x400/?spicy,chips',desc:'Bumbu pedas gurih, bikin nagih.'},
+  {id:3,name:'Keripik Ubi Manis',price:16000,img:'https://source.unsplash.com/600x400/?sweet,chips',desc:'Manis alami, pas untuk semua usia.'},
+  {id:4,name:'Keripik Ubi Balado',price:18000,img:'https://source.unsplash.com/600x400/?balado,chip',desc:'Rasa balado khas Indonesia.'},
+  {id:5,name:'Keripik Ubi Keju',price:20000,img:'https://source.unsplash.com/600x400/?cheese,chips',desc:'Aroma keju kuat dan gurih.'},
+  {id:6,name:'Keripik Ubi BBQ',price:19000,img:'https://source.unsplash.com/600x400/?bbq,chips',desc:'Rasa BBQ smokey yang pas.'}
+];
+
+/* ---------- Render catalog & gallery ---------- */
+const catalogEl = document.getElementById('catalog');
+const galleryEl = document.getElementById('gallery');
+const cartDrawer = document.getElementById('cartDrawer');
+const cartItemsEl = document.getElementById('cartItems');
+const cartTotalEl = document.getElementById('cartTotal');
+const commentList = document.getElementById('commentList');
+
+let cart = [];
+let lightboxIndex = 0;
+
+function renderAll(){
+  // catalog
+  catalogEl.innerHTML = '';
+  products.forEach(p=>{
+    const card = document.createElement('div'); card.className='product';
+    card.innerHTML = `
+      <img src="${p.img}" alt="${p.name}">
+      <div class="p-body">
+        <h4 class="p-title">${p.name}</h4>
+        <div class="p-desc">${p.desc}</div>
+        <div class="p-row">
+          <div class="price">Rp${p.price.toLocaleString()}</div>
+          <div style="display:flex;gap:6px">
+            <button class="btn" onclick="addToCart(${p.id})">Tambah</button>
+            <button style="background:var(--primary-400);color:white;border:0;padding:.45rem .6rem;border-radius:8px;cursor:pointer" onclick="buyNow(${p.id})">Beli</button>
+          </div>
+        </div>
+      </div>
+    `;
+    catalogEl.appendChild(card);
+  });
+
+  // gallery
+  galleryEl.innerHTML = '';
+  products.forEach((p,idx)=>{
+    const img = document.createElement('img'); img.src=p.img; img.alt=p.name;
+    img.onclick = ()=>openLightbox(idx);
+    galleryEl.appendChild(img);
+  });
+}
+renderAll();
+
+/* ---------- Cart logic ---------- */
+function addToCart(id){
+  const prod = products.find(x=>x.id===id);
+  const exist = cart.find(c=>c.id===id);
+  if(exist) exist.qty++;
+  else cart.push({...prod,qty:1});
+  updateCartUI();
+  // open drawer to show feedback
+  cartDrawer.classList.add('open'); cartDrawer.setAttribute('aria-hidden','false');
+}
+function updateCartUI(){
+  if(cart.length===0){ cartItemsEl.innerHTML='Keranjang kosong.'; cartTotalEl.textContent='Rp0'; document.getElementById('cartCount')?.remove(); return;}
+  cartItemsEl.innerHTML = '';
+  let total = 0;
+  cart.forEach(item=>{
+    total += item.price * item.qty;
+    const div = document.createElement('div'); div.className='cart-item';
+    div.innerHTML = `<div style="flex:1"><strong>${item.name}</strong><div style="font-size:.9rem;color:#555">Rp${item.price.toLocaleString()} x ${item.qty}</div></div>
+                     <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+                       <div>Rp${(item.price*item.qty).toLocaleString()}</div>
+                       <div style="display:flex;gap:6px">
+                         <button onclick="changeQty(${item.id},-1)" style="padding:.2rem .4rem">-</button>
+                         <button onclick="changeQty(${item.id},1)" style="padding:.2rem .4rem">+</button>
+                         <button onclick="removeItem(${item.id})" style="padding:.2rem .4rem;background:#fee2e2;border:0;border-radius:6px">Hapus</button>
+                       </div>
+                     </div>`;
+    cartItemsEl.appendChild(div);
+  });
+  cartTotalEl.textContent = 'Rp'+total.toLocaleString();
+  // update small cart count in header (if exists)
+  let cartCount = document.getElementById('cartCount');
+  if(!cartCount){
+    const a = document.createElement('a'); a.id='cartCount'; a.style.display='none'; document.body.appendChild(a);
+  }
+}
+function changeQty(id,delta){
+  const it = cart.find(c=>c.id===id); if(!it) return;
+  it.qty += delta; if(it.qty<=0) cart = cart.filter(c=>c.id!==id);
+  updateCartUI();
+}
+function removeItem(id){ cart = cart.filter(c=>c.id!==id); updateCartUI();}
+function toggleCart(){ cartDrawer.classList.toggle('open'); cartDrawer.classList.contains('open')?cartDrawer.setAttribute('aria-hidden','false'):cartDrawer.setAttribute('aria-hidden','true') }
+
+/* ---------- Checkout ---------- */
+function openCheckout(){ if(cart.length===0){ alert('Keranjang kosong! Tambah produk dulu.'); return; } document.getElementById('checkoutModal').style.display='flex'; document.getElementById('checkoutModal').setAttribute('aria-hidden','false'); }
+function closeCheckout(){ document.getElementById('checkoutModal').style.display='none'; document.getElementById('checkoutModal').setAttribute('aria-hidden','true'); }
+function sendOrder(){
+  const name = document.getElementById('custName').value.trim();
+  const addr = document.getElementById('custAddr').value.trim();
+  const note = document.getElementById('custNote').value.trim();
+  if(!name || !addr){ alert('Isi nama dan alamat untuk proses pemesanan'); return; }
+  let msg = `Halo, saya ${name} ingin memesan:%0A`;
+  cart.forEach(c=> msg += `- ${c.name} x${c.qty} (Rp${(c.price*c.qty).toLocaleString()})%0A`);
+  msg += `Total: ${document.getElementById('cartTotal').textContent}%0AAlamat: ${addr}%0ANote: ${note}`;
+  // open WA - change number sesuai milikmu
+  window.open(`https://wa.me/6281234567890?text=${encodeURIComponent(msg)}`,'_blank');
+  // optionally clear cart
+  cart = []; updateCartUI(); closeCheckout(); cartDrawer.classList.remove('open');
+}
+
+/* ---------- Buy Now (bypass) ---------- */
+function buyNow(id){
+  addToCart(id);
+  openCheckout();
+}
+
+/* ---------- Lightbox (with prev/next) ---------- */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+function openLightbox(index){ lightboxIndex = index; lightbox.style.display='flex'; lightbox.setAttribute('aria-hidden','false'); lightboxImg.src = products[index].img; }
+function closeLightbox(){ lightbox.style.display='none'; lightbox.setAttribute('aria-hidden','true'); }
+function changeLightbox(step){ lightboxIndex = (lightboxIndex + step + products.length) % products.length; lightboxImg.src = products[lightboxIndex].img; }
+
+/* allow keyboard for lightbox */
+document.addEventListener('keydown', e=>{
+  if(lightbox.style.display==='flex'){
+    if(e.key==='ArrowLeft') changeLightbox(-1);
+    if(e.key==='ArrowRight') changeLightbox(1);
+    if(e.key==='Escape') closeLightbox();
+  }
+});
+
+/* ---------- Comments (rating) ---------- */
+let currentRating = 0;
+const starEls = document.querySelectorAll('#ratingStars span');
+starEls.forEach(s=>{
+  s.addEventListener('mouseover', ()=> highlightStars(s.dataset.val));
+  s.addEventListener('mouseout', ()=> highlightStars(currentRating));
+  s.addEventListener('click', ()=> { currentRating = s.dataset.val; highlightStars(currentRating); });
+});
+function highlightStars(r){
+  starEls.forEach(s => s.classList.toggle('active', s.dataset.val <= r));
+}
+function addComment(){
+  const name = document.getElementById('commentName').value.trim();
+  const text = document.getElementById('commentText').value.trim();
+  if(!name || !text || currentRating==0){ alert('Isi nama, komentar, dan rating!'); return; }
+  const div = document.createElement('div'); div.className='comment';
+  let stars=''; for(let i=1;i<=5;i++) stars += `<span style="color:${i<=currentRating?'#fbbf24':'#ddd'}">${'★'}</span>`;
+  div.innerHTML = `<div style="font-weight:700">${name}</div><div style="margin:.25rem 0">${stars}</div><div style="color:#333">${text}</div>`;
+  commentList.prepend(div);
+  // reset
+  document.getElementById('commentName').value=''; document.getElementById('commentText').value=''; currentRating=0; highlightStars(0);
+}
+
+/* ---------- Misc ---------- */
+function scrollToCatalog(){ document.getElementById('catalog-title').scrollIntoView({behavior:'smooth',block:'start'}); }
+
+/* ---------- initial render ---------- */
+renderAll();
+updateCartUI();
+</script>
+</body>
+</html>
